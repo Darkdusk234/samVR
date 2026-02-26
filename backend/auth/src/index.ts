@@ -34,9 +34,9 @@ let cookieHttpOnly = false;
 let cookieSecure = true;
 if (devMode) {
   // NOTE: I couldnt come up with a way to allow all origins so we have hardcoded the devservers url here
-  const devServerUrl = 'http://localhost:5173';
-  console.log('allowing cors for development: ', devServerUrl);
-  app.use(cors({ credentials: true, origin: [devServerUrl] }));
+  const devServerUrls = ['http://localhost:5173', 'http://127.0.0.1:5173'];
+  console.log('allowing cors for development: ', devServerUrls);
+  app.use(cors({ credentials: true, origin: devServerUrls }));
 
   console.log('allowing cookie despite not https');
   cookieHttpOnly = false;

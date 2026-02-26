@@ -5,8 +5,10 @@ import type { User } from 'database/schema';
 import decodeJwt from 'jwt-decode';
 
 const completeAuthUrl = `${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_AUTH_PATH}`;
+const completeAuthUrlForGuest = `http://${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_AUTH_PORT}`;
 // console.log('authUrl: ', completeAuthUrl);
 const authEndpoint = axios.create({ baseURL: completeAuthUrl, withCredentials: true });
+const authEndpointForGuest = axios.create({ baseURL: completeAuthUrlForGuest, withCredentials: true });
 
 export function createUser(username: string, password: string, role: UserRole) {
   return handleResponse(() => authEndpoint.post('/user/create', {
@@ -186,12 +188,12 @@ export const loginWithAutoToken = async (username: string, password: string) => 
 
 export const guestJwt = (params?: {requestedUsername?: string, previousToken?: string}) => {
   if(params?.previousToken){
-    return handleResponse<string>(() =>authEndpoint.get(`/guest-jwt?prevToken=${params.previousToken}`));
+    return handleResponse<string>(() => authEndpointForGuest.get(`/guest-jwt?prevToken=${params.previousToken}`));
   }
   if(params?.requestedUsername){
-    return handleResponse<string>(() =>authEndpoint.get(`/guest-jwt?username=${params.requestedUsername}`));
+    return handleResponse<string>(() => authEndpointForGuest.get(`/guest-jwt?username=${params.requestedUsername}`));
   }
-  return handleResponse<string>(() =>authEndpoint.get('/guest-jwt'));
+  return handleResponse<string>(() => authEndpointForGuest.get('/guest-jwt'));
 };
 export const getJwt = () => handleResponse<string>(() => authEndpoint.get('user/jwt'));
 export const getMe = () => handleResponse<JwtUserData>(() => authEndpoint.get('/user/me'));
