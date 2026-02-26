@@ -4,7 +4,7 @@ import type { JwtPayload, JwtUserData, UserRole } from 'schemas';
 import type { User } from 'database/schema';
 import decodeJwt from 'jwt-decode';
 
-const completeAuthUrl = `https://${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_AUTH_PATH}`;
+const completeAuthUrl = `${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_AUTH_PATH}`;
 // console.log('authUrl: ', completeAuthUrl);
 const authEndpoint = axios.create({ baseURL: completeAuthUrl, withCredentials: true });
 
