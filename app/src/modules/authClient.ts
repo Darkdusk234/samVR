@@ -35,25 +35,25 @@ export function createSender(username: string, password: string, streamId: strin
 }
 
 export function updateUser(userData: {userId: string, username?: string, password?: string}) {
-  return handleResponse(() => authEndpoint.post('/user/update', userData));
+  return handleResponse(() => authEndpointForGuest.post('/user/update', userData));
 }
 
 export function deleteUser(userId: string) {
-  return handleResponse(() => authEndpoint.post('/user/delete', {userId}));
+  return handleResponse(() => authEndpointForGuest.post('/user/delete', { userId }));
 }
 
 type FetchedUsers = Omit<User, 'password'>[]
 export function getUsers() {
-  return handleResponse<FetchedUsers>(() => authEndpoint.get('/user/get-users'));
+  return handleResponse<FetchedUsers>(() => authEndpointForGuest.get('/user/get-users'));
 }
 
 export function getAdmins() {
-  return handleResponse<FetchedUsers>(() => authEndpoint.get('/user/get-admins'));
+  return handleResponse<FetchedUsers>(() => authEndpointForGuest.get('/user/get-admins'));
 }
 
 // type FetchedSenders = FetchedUsers[number]
 export function getSendersForStream(streamId: string) {
-  const response = handleResponse<FetchedUsers>(() => authEndpoint.post('/user/get-sender', {
+  const response = handleResponse<FetchedUsers>(() => authEndpointForGuest.post('/user/get-sender', {
     streamId,
   }));
   return response;
@@ -72,7 +72,7 @@ const handleResponse = async <ReturnType>(apiCall: () => Promise<AxiosResponse<R
 
 export const login = async (username: string, password: string) => {
   try {
-    await authEndpoint.post('/user/login', {
+    await authEndpointForGuest.post('/user/login', {
       username,
       password,
     });

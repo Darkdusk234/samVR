@@ -409,7 +409,11 @@ const loginUser: RequestHandler = async (req, res) => {
     }
   } catch (e) {
     console.error(e);
-    res.status(501).send('failed when trying to login');
+    if (e instanceof Error && e.message === 'no user with that username found!') {
+      res.status(404).send('User with that username not found');
+    } else {
+      res.status(501).send('failed when trying to login');
+    }
     return;
   }
   res.status(403).send('You shall not pass!');
