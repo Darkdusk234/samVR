@@ -4,11 +4,9 @@ import type { JwtPayload, JwtUserData, UserRole } from 'schemas';
 import type { User } from 'database/schema';
 import decodeJwt from 'jwt-decode';
 
-const completeAuthUrl = `${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_AUTH_PATH}`;
-const completeAuthUrlForGuest = `http://${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_AUTH_PORT}`;
+const completeAuthUrl = `http://${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_AUTH_PORT}`;
 // console.log('authUrl: ', completeAuthUrl);
 const authEndpoint = axios.create({ baseURL: completeAuthUrl, withCredentials: true });
-const authEndpointForGuest = axios.create({ baseURL: completeAuthUrlForGuest, withCredentials: true });
 
 export function createUser(username: string, password: string, role: UserRole) {
   return handleResponse(() => authEndpoint.post('/user/create', {
@@ -35,25 +33,25 @@ export function createSender(username: string, password: string, streamId: strin
 }
 
 export function updateUser(userData: {userId: string, username?: string, password?: string}) {
-  return handleResponse(() => authEndpointForGuest.post('/user/update', userData));
+  return handleResponse(() => authEndpoint.post('/user/update', userData));
 }
 
 export function deleteUser(userId: string) {
-  return handleResponse(() => authEndpointForGuest.post('/user/delete', { userId }));
+  return handleResponse(() => authEndpoint.post('/user/delete', { userId }));
 }
 
 type FetchedUsers = Omit<User, 'password'>[]
 export function getUsers() {
-  return handleResponse<FetchedUsers>(() => authEndpointForGuest.get('/user/get-users'));
+  return handleResponse<FetchedUsers>(() => authEndpoint.get('/user/get-users'));
 }
 
 export function getAdmins() {
-  return handleResponse<FetchedUsers>(() => authEndpointForGuest.get('/user/get-admins'));
+  return handleResponse<FetchedUsers>(() => authEndpoint.get('/user/get-admins'));
 }
 
 // type FetchedSenders = FetchedUsers[number]
 export function getSendersForStream(streamId: string) {
-  const response = handleResponse<FetchedUsers>(() => authEndpointForGuest.post('/user/get-sender', {
+  const response = handleResponse<FetchedUsers>(() => authEndpoint.post('/user/get-sender', {
     streamId,
   }));
   return response;
@@ -72,7 +70,7 @@ const handleResponse = async <ReturnType>(apiCall: () => Promise<AxiosResponse<R
 
 export const login = async (username: string, password: string) => {
   try {
-    await authEndpointForGuest.post('/user/login', {
+    await authEndpoint.post('/user/login', {
       username,
       password,
     });
@@ -188,15 +186,15 @@ export const loginWithAutoToken = async (username: string, password: string) => 
 
 export const guestJwt = (params?: {requestedUsername?: string, previousToken?: string}) => {
   if(params?.previousToken){
-    return handleResponse<string>(() => authEndpointForGuest.get(`/guest-jwt?prevToken=${params.previousToken}`));
+    return handleResponse<string>(() => authEndpoint.get(`/guest-jwt?prevToken=${params.previousToken}`));
   }
   if(params?.requestedUsername){
-    return handleResponse<string>(() => authEndpointForGuest.get(`/guest-jwt?username=${params.requestedUsername}`));
+    return handleResponse<string>(() => authEndpoint.get(`/guest-jwt?username=${params.requestedUsername}`));
   }
-  return handleResponse<string>(() => authEndpointForGuest.get('/guest-jwt'));
+  return handleResponse<string>(() => authEndpoint.get('/guest-jwt'));
 };
 export const getJwt = () => handleResponse<string>(() => authEndpoint.get('user/jwt'));
-export const getMe = () => handleResponse<JwtUserData>(() => authEndpoint.get('/user/me'));
+export const getMe = () => handleResponse<JwtUserData>(() => authEndpoint.get('user/me'));
 export const logout = () => {
   clearTimeout(activeTimeout);
   return handleResponse<void>(() => authEndpoint.get('user/logout'));
