@@ -150,11 +150,8 @@ function closePasswordModal() {
 }
 
 async function submitPasswordChange() {
-  // TODO: call your API / authStore action here
-  // e.g. await authStore.changePassword(passwordForm.value)
-
-  // console.log('Change password payload', passwordForm.value);
-
+  await authStore.changePassword(passwordForm.value)
+  console.log('Password changed');
   closePasswordModal();
 }
 
