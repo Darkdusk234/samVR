@@ -92,7 +92,9 @@
           {{ translateUserRole(authStore.role) }}
         </span> -->
       </div>
-      <button class="btn-ghost shrink-0 btn-error btn btn-circle"
+      <button
+        v-if="authStore.role === 'user'"
+        class="btn-ghost shrink-0 btn-error btn btn-circle"
         @click="showPasswordModal = true"
       >
         <span class="material-icons">
