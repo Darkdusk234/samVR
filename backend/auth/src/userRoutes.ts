@@ -209,12 +209,6 @@ interface DeleteUserRequest extends ExpressReq {
   }
 }
 
-interface GetCurrentUserRequest extends ExpressReq {
-  query: {
-    userId: UserId
-  }
-}
-
 const deleteUser: RequestHandler = async (req: DeleteUserRequest, res) => {
   try {
     const userData = req.session.user;
@@ -289,9 +283,8 @@ const getUsers: RequestHandler = async (req, res) => {
   res.send(dbResponse);
 }
 
-const getCurrentUser: RequestHandler = async (req: GetCurrentUserRequest, res) => {
+const getCurrentUser: RequestHandler = async (req, res) => {
   const userData = req.session.user;
-  const { userId } = req.query;
   try {
     if (!userData) {
       throw new Error('no client userdata. unauthorized!');
@@ -299,21 +292,9 @@ const getCurrentUser: RequestHandler = async (req: GetCurrentUserRequest, res) =
     if (!userData.role) {
       throw new Error('you have no role! Thus you are not authorized!');
     }
-    if (!userId) {
-      throw new Error('no userId provided. cant delete');
-    }
   } catch (e) {
     const msg = extractMessageFromCatch(e, 'You give bad data!!!!');
     res.status(400).send(msg);
-    return;
-  }
-  try {
-    if (userId !== userData.userId) {
-      throw new Error('Inputted id does not match current user.');
-    }
-  } catch (e) {
-    const msg = extractMessageFromCatch(e, 'Go away. Not authorized');
-    res.status(401).send(msg);
     return;
   }
 
@@ -324,7 +305,7 @@ const getCurrentUser: RequestHandler = async (req: GetCurrentUserRequest, res) =
       role: true,
       password: true,
     },
-    where: (users, { eq }) => eq(users.userId, userId)
+    where: (users, { eq }) => eq(users.userId, userData.userId)
   })
 
   res.send(dbResponse);
