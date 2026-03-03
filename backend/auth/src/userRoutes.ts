@@ -283,6 +283,46 @@ const getUsers: RequestHandler = async (req, res) => {
   res.send(dbResponse);
 }
 
+const getCurrentUser: RequestHandler = async (req: DeleteUserRequest, res) => {
+  const userData = req.session.user;
+  const payload = req.body;
+  try {
+    if (!userData) {
+      throw new Error('no client userdata. unauthorized!');
+    }
+    if (!userData.role) {
+      throw new Error('you have no role! Thus you are not authorized!');
+    }
+    if (!payload || !payload.userId) {
+      throw new Error('no userId provided. cant delete');
+    }
+  } catch (e) {
+    const msg = extractMessageFromCatch(e, 'You give bad data!!!!');
+    res.status(400).send(msg);
+    return;
+  }
+  try {
+    if (payload.userId !== userData.userId) {
+      throw new Error('Inputted id does not match current user.');
+    }
+  } catch (e) {
+    const msg = extractMessageFromCatch(e, 'Go away. Not authorized');
+    res.status(401).send(msg);
+    return;
+  }
+
+  const dbResponse = await db.query.users.findFirst({
+    columns: {
+      userId: true,
+      username: true,
+      password: true,
+    },
+    where: (users, { eq }) => eq(users.userId, payload.userId)
+  })
+
+  res.send(dbResponse);
+}
+
 const getAdmins: RequestHandler = async (req, res) => {
   const userData = req.session.user;
 
@@ -482,6 +522,7 @@ export default function createUserRouter(): Router {
   userRouter.post('/create-sender', isLoggedIn, createSenderForVenue);
 
   userRouter.get('/me', isLoggedIn, getSelf);
+  userRouter.get('/get-current-user', isLoggedIn, getCurrentUser)
 
   userRouter.get('/jwt', isLoggedIn, getJwt);
 
