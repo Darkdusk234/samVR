@@ -315,6 +315,7 @@ const getCurrentUser: RequestHandler = async (req: DeleteUserRequest, res) => {
     columns: {
       userId: true,
       username: true,
+      role: true,
       password: true,
     },
     where: (users, { eq }) => eq(users.userId, payload.userId)
