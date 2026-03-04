@@ -205,7 +205,6 @@ const updateUser: RequestHandler = async (req: UpdateUserRequest, res) => {
 
 interface ChangePasswordRequest extends ExpressReq {
   body: {
-    username: string;
     currentPassword: string;
     newPassword: string;
   }
@@ -219,7 +218,7 @@ const updateUserPassword: RequestHandler = async (req: ChangePasswordRequest, re
       throw new Error('no client userdata. unauthorized!');
     }
 
-    if (!userData.role) {
+    if (userData.role === "guest" || userData.role === "god") {
       throw new Error('you have no role! Thus you are not authorized!');
     }
 
@@ -235,7 +234,6 @@ const updateUserPassword: RequestHandler = async (req: ChangePasswordRequest, re
   const currentUserDatabase = await db.query.users.findFirst({
     columns: {
       userId: true,
-      username: true,
       role: true,
       password: true,
     },
@@ -257,9 +255,6 @@ const updateUserPassword: RequestHandler = async (req: ChangePasswordRequest, re
   }
 
   try {
-    if (!data.username || data.username !== currentUserDatabase.username) {
-      throw new Error('Inputted data does not match data in database!')
-    }
 
     if (!data.currentPassword) {
       throw new Error('Inputted data does not match data in database!')

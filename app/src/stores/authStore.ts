@@ -5,7 +5,6 @@ import jwtDecode from 'jwt-decode';
 import { computed, ref } from 'vue';
 
 interface ChangePasswordRequest {
-  username: string;
   currentPassword: string;
   newPassword: string;
 }

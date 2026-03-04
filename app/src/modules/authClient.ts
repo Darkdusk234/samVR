@@ -9,7 +9,6 @@ const completeAuthUrl = `http://${import.meta.env.EXPOSED_SERVER_URL}:${import.m
 const authEndpoint = axios.create({ baseURL: completeAuthUrl, withCredentials: true });
 
 interface ChangePasswordRequest {
-  username: string;
   currentPassword: string;
   newPassword: string;
 }
@@ -187,12 +186,10 @@ export const loginWithAutoToken = async (username: string, password: string) => 
 
 export const changePassword = async (data: ChangePasswordRequest) => {
   try {
-    const username = data.username;
     const currentPassword = data.currentPassword;
     const newPassword = data.newPassword;
 
     await authEndpoint.post('/user/change-Password', {
-      username,
       currentPassword,
       newPassword,
     })
