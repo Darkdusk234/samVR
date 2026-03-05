@@ -8,11 +8,11 @@ export function getAssetUrl<T extends string>(generatedName: T) {
   //   return generatedName
   // }
 
-  return `https://${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_FILESERVER_PATH}/file/${generatedName}`;
+  return `http://${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_FILESERVER_PORT}/file/${generatedName}`;
   // return `https://${process.env.EXPOSED_SERVER_URL}${process.env.EXPOSED_FILESERVER_PATH}/files/${generatedName}`;
 }
 
-const fileserverUrl = `https://${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_FILESERVER_PATH}` as const
+const fileserverUrl = `http://${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_FILESERVER_PORT}` as const
 export const assetsUrl = `${fileserverUrl}/file/` as const;
 export async function uploadFileData({ data, authToken, onProgress, abortController }: { data: FormData, authToken: string, onProgress?: (progressEvent: AxiosProgressEvent) => void, abortController?: AbortController }) {
   // We can apparently receive upload progress after the upload is actually finished.
