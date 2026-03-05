@@ -245,7 +245,7 @@ const updateUserPassword: RequestHandler = async (req: ChangePasswordRequest, re
       throw new Error('User not found in databse.')
     }
 
-    if (userData.role !== currentUserDatabase.role || userData.username !== currentUserDatabase.username) {
+    if (userData.role !== currentUserDatabase.role) {
       throw new Error('Current user data does not match database.')
     }
   } catch (e) {
