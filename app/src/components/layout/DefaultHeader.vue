@@ -1,62 +1,10 @@
 <template>
   <!-- Modal used for changing passwords -->
-  <div
-  v-if="showPasswordModal"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-  @click.self="closePasswordModal"
->
-    <div class="bg-base-100 rounded-lg shadow-lg w-full max-w-md p-6">
-      <h2 class="text-lg font-semibold mb-4">Byt lösenord</h2>
-    
-      <form @submit.prevent="submitPasswordChange">
-        <div class="form-control mb-3">
-          <label class="label">
-            <span class="label-text">Användarnamn</span>
-          </label>
-          <input
-            v-model="passwordForm.username"
-            type="text"
-            class="input input-bordered w-full"
-          />
-        </div>
-      
-        <div class="form-control mb-3">
-          <label class="label">
-            <span class="label-text">Nuvarande lösenord</span>
-          </label>
-          <input
-            v-model="passwordForm.currentPassword"
-            type="password"
-            class="input input-bordered w-full"
-          />
-        </div>
-      
-        <div class="form-control mb-4">
-          <label class="label">
-            <span class="label-text">Nytt lösenord</span>
-          </label>
-          <input
-            v-model="passwordForm.newPassword"
-            type="password"
-            class="input input-bordered w-full"
-          />
-        </div>
-      
-        <div class="flex justify-end gap-2">
-          <button
-            type="button"
-            class="btn btn-ghost"
-            @click="closePasswordModal"
-          >
-            Avbryt
-          </button>
-          <button type="submit" class="btn btn-primary">
-            Spara
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <ChangePasswordModal
+    v-model="showPasswordModal"
+    @submit="handlePasswordSubmit"
+  />
+  
   <div data-theme="dark" :style="`background-image: url(${unsplashBackground});`"
     class="navbar justify-between gap-14 pl-6">
     <div class="">
@@ -131,30 +79,19 @@ import { useAuthStore } from '@/stores/authStore';
 import { hasAtLeastSecurityRole, translateUserRole } from 'schemas';
 import { computed, ref } from 'vue';
 import unsplashBackground from '@/assets/milad-fakurian-DX7pT_guAyE-unsplash.jpg';
+import ChangePasswordModal from '@/components/ChangePasswordModal.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
 const showPasswordModal = ref(false);
 
-const passwordForm = ref({
-  username: '',
-  currentPassword: '',
-  newPassword: '',
-});
-
-function closePasswordModal() {
-  showPasswordModal.value = false;
-  passwordForm.value = {
-    username: '',
-    currentPassword: '',
-    newPassword: '',
-  };
-}
-
-async function submitPasswordChange() {
-  await authStore.changePassword(passwordForm.value)
+async function handlePasswordSubmit(payload: {
+  currentPassword: string;
+  newPassword: string;
+}) {
+  await authStore.changePassword(payload);
   console.log('Password changed');
-  closePasswordModal();
+  showPasswordModal.value = false;
 }
 
 const isAtLeastUser = computed(() => {
