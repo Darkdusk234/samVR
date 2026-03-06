@@ -1,14 +1,16 @@
 <template>
-<div
-  v-if="modelValue"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-  @click.self="onCancel"
->
-    <div class="bg-base-100 rounded-lg shadow-lg w-full max-w-md p-6">
+  <dialog
+    class="modal"
+    :class="{ 'modal-open': modelValue }"
+    @click.self="onCancel"
+  >
+  
+    <div class="modal-box">
+      <button @click="onCancel" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
       <h2 class="text-lg font-semibold mb-4">Byt lösenord</h2>
-    
-      <form @submit.prevent="onSubmit">
-        <div class="form-control mb-3">
+
+      <form @submit.prevent="onSubmit" class="space-y-3">
+        <div class="form-control">
           <label class="label">
             <span class="label-text">Nuvarande lösenord</span>
           </label>
@@ -16,11 +18,11 @@
             v-model="passwordForm.currentPassword"
             type="password"
             class="input input-bordered w-full"
-            :class="{'input-error': !passwordsMatch}"
+            :class="{ 'input-error': !passwordsMatch }"
           />
         </div>
-      
-        <div class="form-control mb-3">
+
+        <div class="form-control">
           <label class="label">
             <span class="label-text">Bekräfta nuvarande lösenord</span>
           </label>
@@ -28,14 +30,14 @@
             v-model="currentPasswordCheck"
             type="password"
             class="input input-bordered w-full"
-            :class="{'input-error': !passwordsMatch}"
+            :class="{ 'input-error': !passwordsMatch }"
           />
           <p v-if="!passwordsMatch" class="mt-1 text-sm text-error">
             Lösenorden stämmer inte överens.
           </p>
         </div>
-      
-        <div class="form-control mb-4">
+
+        <div class="form-control">
           <label class="label">
             <span class="label-text">Nytt lösenord</span>
           </label>
@@ -45,8 +47,8 @@
             class="input input-bordered w-full"
           />
         </div>
-      
-        <div class="flex justify-end gap-2">
+
+        <div class="modal-action">
           <button
             type="button"
             class="btn btn-ghost"
@@ -60,22 +62,19 @@
         </div>
       </form>
     </div>
-  </div>
+  </dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
 
 const props = defineProps<{
-  modelValue: boolean,
+  modelValue: boolean
 }>();
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
-  (e: 'submit', payload: {
-    currentPassword: string;
-    newPassword: string;
-  }): void;
+  (e: 'submit', payload: { currentPassword: string; newPassword: string }): void;
 }>();
 
 const emptyForm = () => ({
@@ -86,9 +85,10 @@ const emptyForm = () => ({
 const passwordForm = ref(emptyForm());
 const currentPasswordCheck = ref('');
 
-const passwordsMatch = computed(() =>
-  currentPasswordCheck.value === '' ||
-  passwordForm.value.currentPassword === currentPasswordCheck.value
+const passwordsMatch = computed(
+  () =>
+    currentPasswordCheck.value === '' ||
+    passwordForm.value.currentPassword === currentPasswordCheck.value,
 );
 
 watch(
@@ -98,7 +98,7 @@ watch(
       passwordForm.value = emptyForm();
       currentPasswordCheck.value = '';
     }
-  }
+  },
 );
 
 function close() {
@@ -110,10 +110,8 @@ function onCancel() {
 }
 
 function onSubmit() {
-  if (!passwordsMatch.value) {
-    return;
-  }
-    emit('submit', { ...passwordForm.value });
-    close();
+  if (!passwordsMatch.value) return;
+  emit('submit', { ...passwordForm.value });
+  close();
 }
 </script>
