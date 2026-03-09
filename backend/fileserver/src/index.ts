@@ -31,6 +31,7 @@ import sharp from 'sharp';
 
 const savePathAbsolute = path.resolve('.', 'uploads')
 const savePathRelative = './uploads/'
+const devMode = process.env.DEVELOPMENT === 'true';
 
 await promise.mkdir(savePathAbsolute, { recursive: true });
 
@@ -211,13 +212,23 @@ const privateRoutes = new Hono<{ Variables: { jwtPayload: JwtPayload } }>()
 
 const app = new Hono<{ Variables: { jwtPayload: JwtPayload } }>();
 
-app.use(
-  '*',
-  cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
-    credentials: true,
-  })
-);
+if (devMode) {
+  app.use(
+    '*',
+    cors({
+      origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+      credentials: true,
+    })
+  );
+} else {
+  app.use(
+    '*',
+    cors({
+      origin: [`${process.env.EXPOSED_SERVER_URL}`],
+      credentials: true
+    })
+  )
+}
 
 app.route('/', publicRoutes)
 app.route('/', privateRoutes);

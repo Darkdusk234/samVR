@@ -2,17 +2,28 @@ import axios, { CanceledError, type AxiosProgressEvent } from "axios";
 import type { UploadResponse } from "fileserver";
 import type { AssetId } from "schemas";
 
+const devMode = import.meta.env.DEV;
+
 export function getAssetUrl<T extends string>(generatedName: T) {
   // console.log('getAssetUrl called', generatedName);
   // if (generatedName === undefined) {
   //   return generatedName
   // }
 
-  return `http://${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_FILESERVER_PORT}/file/${generatedName}`;
+  if (devMode) {
+    return `${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_FILESERVER_PORT}/file/${generatedName}`;
+  } else {
+    return `${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_FILESERVER_PATH}/files/${generatedName}`;
+  }
   // return `https://${process.env.EXPOSED_SERVER_URL}${process.env.EXPOSED_FILESERVER_PATH}/files/${generatedName}`;
 }
 
-const fileserverUrl = `http://${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_FILESERVER_PORT}` as const
+let fileserverUrl: string;
+if (devMode) {
+  fileserverUrl = `${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_FILESERVER_PORT}`;
+} else {
+  fileserverUrl = `${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_FILESERVER_PATH}`;
+}
 export const assetsUrl = `${fileserverUrl}/file/` as const;
 export async function uploadFileData({ data, authToken, onProgress, abortController }: { data: FormData, authToken: string, onProgress?: (progressEvent: AxiosProgressEvent) => void, abortController?: AbortController }) {
   // We can apparently receive upload progress after the upload is actually finished.

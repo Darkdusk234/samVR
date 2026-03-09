@@ -4,7 +4,15 @@ import type { JwtPayload, JwtUserData, UserRole } from 'schemas';
 import type { User } from 'database/schema';
 import decodeJwt from 'jwt-decode';
 
-const completeAuthUrl = `http://${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_AUTH_PORT}`;
+const devMode = import.meta.env.DEV;
+
+let completeAuthUrl: string;
+if (devMode) {
+  completeAuthUrl = `${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_AUTH_PORT}`;
+} else {
+  completeAuthUrl = `${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_AUTH_PATH}`;
+}
+
 // console.log('authUrl: ', completeAuthUrl);
 const authEndpoint = axios.create({ baseURL: completeAuthUrl, withCredentials: true });
 
