@@ -65,6 +65,9 @@
             {{ route.label }}
           </RouterLink>
         </li>
+        <li>
+          <a @click="changePasswordHamburgerMenu">Ändra lösenord</a>
+        </li>
         <li class="text-error">
           <a @click="logout">{{ isAtLeastUser ? 'Logga ut' : 'Avsluta' }}</a>
         </li>
@@ -92,6 +95,11 @@ async function handlePasswordSubmit(payload: {
   await authStore.changePassword(payload);
   console.log('Password changed');
   showPasswordModal.value = false;
+}
+
+const changePasswordHamburgerMenu = async () => {
+  showPasswordModal.value = true;
+  closeMenu();
 }
 
 const isAtLeastUser = computed(() => {
