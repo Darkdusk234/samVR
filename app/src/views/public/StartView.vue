@@ -16,7 +16,7 @@
         </h2>
         <button v-if="canCreateVrSpace" class="btn btn-primary btn-outline btn-sm px-2" @click="createVrSpace">
           <span class="material-icons">add</span>
-          Skapa ny VR-scen
+          Skapa ny VR-miljö
         </button>
       </div>
       <VRList />
@@ -39,7 +39,7 @@ const authStore = useAuthStore();
 const vrSpaceStore = useVrSpaceStore();
 
 const canCreateVrSpace = computed(() => {
-  if (!authStore.role) { return false; }
+  if (!authStore.role || !hasAtLeastSecurityRole(authStore.role, 'admin')) { return false; }
   return hasAtLeastSecurityRole(authStore.role, 'user');
 });
 async function createVrSpace() {
