@@ -98,6 +98,7 @@ function closeMenu() {
 }
 
 const logout = async () => {
+  localStorage.removeItem('guestAvatarRandomized')
   await authStore.logout();
   console.log('was logged out');
   router.push({ path: '/login', force: true });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, type Ref, reactive, watch, onMounted } from 'vue';
+import { ref, type Ref, reactive, nextTick, watch, onMounted } from 'vue';
 import { type Entity } from 'aframe';
 import { stringify, parse } from 'devalue';
 
@@ -36,10 +36,23 @@ onMounted(() => {
   if (!wasLoaded) {
     loadAvatarFromStorage();
   }
+
+  watch(() => authStore.role, (newRole) => {
+    if (newRole === 'guest') {
+      const hasRandomizedBefore = localStorage.getItem('guestAvatarRandomized')
+
+      if (!hasRandomizedBefore) {
+        setTimeout(() => {
+          randomizeAvatar()
+          localStorage.setItem('guestAvatarRandomized', 'true')
+        }, 150)
+      }
+    }
+  }, { immediate: true })
+
   // we only start watching after loading the (maybe) saved avatardesign
   watch(() => currentAvatarSettings, () => {
     if (authStore.role === 'guest') {
-      randomizeAvatar();
       saveAvatarSettingsToStorage();
     }
     connectionStore.client.user.updateAvatarDesign.mutate(currentAvatarSettings);
