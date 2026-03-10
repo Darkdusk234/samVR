@@ -5,12 +5,13 @@ import type { User } from 'database/schema';
 import decodeJwt from 'jwt-decode';
 
 const devMode = import.meta.env.DEV;
+const localMode = import.meta.env.LOCAL === 'true';
 
 let completeAuthUrl: string;
-if (devMode) {
-  completeAuthUrl = `${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_AUTH_PORT}`;
+if (localMode) {
+  completeAuthUrl = `http://${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_AUTH_PORT}`;
 } else {
-  completeAuthUrl = `${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_AUTH_PATH}`;
+  completeAuthUrl = `https://${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_AUTH_PATH}`;
 }
 
 // console.log('authUrl: ', completeAuthUrl);

@@ -3,6 +3,7 @@ import type { UploadResponse } from "fileserver";
 import type { AssetId } from "schemas";
 
 const devMode = import.meta.env.DEV;
+const localMode = import.meta.env.LOCAL === 'true';
 
 export function getAssetUrl<T extends string>(generatedName: T) {
   // console.log('getAssetUrl called', generatedName);
@@ -10,19 +11,18 @@ export function getAssetUrl<T extends string>(generatedName: T) {
   //   return generatedName
   // }
 
-  if (devMode) {
-    return `${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_FILESERVER_PORT}/file/${generatedName}`;
+  if (localMode) {
+    return `http://${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_FILESERVER_PORT}/file/${generatedName}`;
   } else {
-    return `${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_FILESERVER_PATH}/files/${generatedName}`;
+    return `https://${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_FILESERVER_PATH}/file/${generatedName}`;
   }
-  // return `https://${process.env.EXPOSED_SERVER_URL}${process.env.EXPOSED_FILESERVER_PATH}/files/${generatedName}`;
 }
 
 let fileserverUrl: string;
-if (devMode) {
-  fileserverUrl = `${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_FILESERVER_PORT}`;
+if (localMode) {
+  fileserverUrl = `http://${import.meta.env.EXPOSED_SERVER_URL}:${import.meta.env.EXPOSED_FILESERVER_PORT}`;
 } else {
-  fileserverUrl = `${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_FILESERVER_PATH}`;
+  fileserverUrl = `https://${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_FILESERVER_PATH}`;
 }
 export const assetsUrl = `${fileserverUrl}/file/` as const;
 export async function uploadFileData({ data, authToken, onProgress, abortController }: { data: FormData, authToken: string, onProgress?: (progressEvent: AxiosProgressEvent) => void, abortController?: AbortController }) {
