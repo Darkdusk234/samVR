@@ -86,7 +86,7 @@
                 Delning
               </div>
               <p class="text-sm text-gray-600">
-                Välj de användare som ska ha tillgång till miljön, samt på vilken nivå de ska ha tillgång.
+                Välj användare samt vilken behörighet de ska ha.
               </p>
 
               <div class="form-control">
