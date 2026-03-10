@@ -31,6 +31,18 @@ const authStore = useAuthStore();
 
 const currentAvatarSettings = reactive<AvatarDesign>(defaultAvatarDesign);
 
+const partMap: Record<string, string> = {
+  'eyes': 'Ögon', 
+  'eyebrows': 'Ögonbryn',
+  'mouths': 'Mun',
+  'hair': 'Hår',
+  'facialhair': 'Ansiktshår',
+  'clothes': 'Kläder',
+  'accessories': 'Tillbehör',
+  'jewelry': 'Smycken',
+  'layer': 'Ytterlager',
+};
+
 onMounted(() => {
   const wasLoaded = loadAvatarFromClientState();
   if (!wasLoaded) {
@@ -217,7 +229,7 @@ watch(currentColorPickerValue, (newColor, prevColor) => {
       <!-- COLUMN 1 -->
       <div
         class="grid grid-cols-[minmax(min-content,1fr)_minmax(8rem,1.7fr)_auto] items-center gap-5 overflow-y-auto capitalize bg-slate-200 p-2 rounded-md">
-        <span class="col-start-1 label-text font-semibold">Skin color</span>
+        <span class="col-start-1 label-text font-semibold">Hud Färg</span>
         <div class="col-start-3">
           <button class="btn btn-xs btn-circle btn-outline material-icons text-lg leading-none"
             :style="{ 'background': skinColorIsActive ? currentSkinColor : 'transparent' }" @click="popupSkin.open">
@@ -240,7 +252,7 @@ watch(currentColorPickerValue, (newColor, prevColor) => {
         <template v-for="(partsList, key) in avatarAssets" :key="key">
           <template v-if="avatarAssets[key].length > 1">
             <!-- <div class="col-start-1 col-span-3 divider divider-horizontal divider-neutral mt-1" /> -->
-            <span class="col-start-1 label-text font-semibold">{{ key }}</span>
+            <span class="col-start-1 label-text font-semibold">{{ partMap[key] }}</span>
             <div class=" flex max-w-56 bg-white join join-horizontal items-stretch justify-between gap-1">
               <button @click="changeClothingIdx(key, -1)"
                 class="text-slate-700 material-icons hover:bg-slate-200 join-item px-1">
