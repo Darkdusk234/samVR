@@ -39,6 +39,7 @@ onMounted(() => {
   // we only start watching after loading the (maybe) saved avatardesign
   watch(() => currentAvatarSettings, () => {
     if (authStore.role === 'guest') {
+      randomizeAvatar();
       saveAvatarSettingsToStorage();
     }
     connectionStore.client.user.updateAvatarDesign.mutate(currentAvatarSettings);
@@ -48,6 +49,16 @@ onMounted(() => {
 function saveAvatarSettingsToStorage() {
   // console.log('avatarSettings before save:', currentAvatarSettings);
   window.localStorage.setItem('avatarSettings', stringify(currentAvatarSettings));
+}
+
+function randomizeAvatar() {
+  for (const part in avatarAssets) {
+    const partTyped = part as keyof typeof avatarAssets;
+    const options = avatarAssets[partTyped];
+    const randomOption = options[Math.floor(Math.random() * options.length)];
+    currentAvatarSettings.parts[partTyped].model = randomOption;
+  }
+  currentAvatarSettings.skinColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
 }
 
 function loadAvatarFromClientState() {
@@ -283,6 +294,18 @@ watch(currentColorPickerValue, (newColor, prevColor) => {
             </div>
           </template>
         </template>
+          <div class="col-start-1 col-span-3 flex justify-center items-center gap-2 mt-1">
+            <button 
+              @click="randomizeAvatar" 
+              title="Randomisera avatar"
+              class="btn text-slate-100 btn-sm bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center material-icons text-xl leading-none w-[10rem]
+              bg-gradient-to-r from-blue-500 to-purple-500
+           hover:bg-gradient-to-l hover:from-purple-500 hover:to-blue-500
+           hover:shadow-lg transition-all duration-300"
+            >
+              shuffle
+            </button>
+          </div>
         <PopUp ref="popupParts" class="bg-white rounded-xl">
           <Vue3ColorPicker v-model="currentColorPickerValue" :show-picker-mode="false"
             @update:model-value="onColorPicked(popupPartsKeys!.part, popupPartsKeys!.cIdx, currentColorPickerValue)"
