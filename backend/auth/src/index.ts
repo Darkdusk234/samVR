@@ -21,7 +21,7 @@ const haikunator = new Haikunator({
 
 // console.log('environment: ', process.env);
 const devMode = process.env.DEVELOPMENT;
-const localMode = process.env.LOCAL === 'true';
+const localMode = process.env.EXPOSED_LOCAL === 'true';
 
 const app = express();
 

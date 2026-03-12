@@ -3,7 +3,7 @@ import type { UploadResponse } from "fileserver";
 import type { AssetId } from "schemas";
 
 const devMode = import.meta.env.DEV;
-const localMode = import.meta.env.LOCAL === 'true';
+const localMode = import.meta.env.EXPOSED_LOCAL === 'true';
 
 export function getAssetUrl<T extends string>(generatedName: T) {
   // console.log('getAssetUrl called', generatedName);

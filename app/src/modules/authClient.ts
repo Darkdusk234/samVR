@@ -5,7 +5,8 @@ import type { User } from 'database/schema';
 import decodeJwt from 'jwt-decode';
 
 const devMode = import.meta.env.DEV;
-const localMode = import.meta.env.LOCAL === 'true';
+const localMode = import.meta.env.EXPOSED_LOCAL === 'true';
+console.log('localMode:', localMode);
 
 let completeAuthUrl: string;
 if (localMode) {
@@ -14,7 +15,7 @@ if (localMode) {
   completeAuthUrl = `https://${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_AUTH_PATH}`;
 }
 
-// console.log('authUrl: ', completeAuthUrl);
+console.log('authUrl: ', completeAuthUrl);
 const authEndpoint = axios.create({ baseURL: completeAuthUrl, withCredentials: true });
 
 export function createUser(username: string, password: string, role: UserRole) {

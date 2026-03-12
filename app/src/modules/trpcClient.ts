@@ -13,7 +13,7 @@ import { createReceiver } from 'ts-event-bridge/receiver'
 import { shallowRef, type ShallowRef, computed, type ComputedRef } from 'vue';
 import type { Payload } from 'ts-event-bridge/sender';
 
-const localMode = import.meta.env.LOCAL === 'true';
+const localMode = import.meta.env.EXPOSED_LOCAL === 'true';
 
 let wsBaseURL = `wss://${import.meta.env.EXPOSED_SERVER_URL}${import.meta.env.EXPOSED_MEDIASOUP_PATH}`;
 if (localMode) {

@@ -32,7 +32,7 @@ import sharp from 'sharp';
 const savePathAbsolute = path.resolve('.', 'uploads')
 const savePathRelative = './uploads/'
 const devMode = process.env.DEVELOPMENT === 'true';
-const localMode = process.env.LOCAL === 'true';
+const localMode = process.env.EXPOSED_LOCAL === 'true';
 
 await promise.mkdir(savePathAbsolute, { recursive: true });
 
@@ -234,7 +234,7 @@ if (localMode) {
 app.route('/', publicRoutes)
 app.route('/', privateRoutes);
 
-const port = Number.parseInt(process.env.FILESERVER_PORT ?? '3000');
+const port = Number.parseInt(process.env.EXPOSED_FILESERVER_PORT ?? '3000');
 console.log(`Server is running on port ${port}`)
 
 serve({
