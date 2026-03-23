@@ -299,10 +299,44 @@
                 <a-circle color="yellow" transparent="true" rotation="-90 0 0" position="0 0.05 0"
                   :opacity="currentCursorMode === 'place-spawnposition' ? 0.2 : 0.5"
                   :radius="vrSpaceStore.writableVrSpaceDbData.spawnRadius" />
-                <a-icosahedron v-if="vrSpaceStore.panoramicPreviewUrl" detail="5" scale="-0.5 -0.5 -0.5"
+                <!-- <a-icosahedron v-if="vrSpaceStore.panoramicPreviewUrl" detail="5" scale="-0.5 -0.5 -0.5"
                   :position="`0 ${defaultHeightOverGround} 0`"
                   :opacity="currentCursorMode === 'place-spawnposition' ? 0.5 : 1.0"
-                  :material="`shader: vr-portal; warpParams: 3 0.9; src: url(${vrSpaceStore.panoramicPreviewUrl}); side: back;`" />
+                  :material="`shader: vr-portal; warpParams: 3 0.9; src: url(${vrSpaceStore.panoramicPreviewUrl}); side: back;`" /> -->
+                  <a-scene embedded ref="sceneTag" cursor="fuse:false; rayOrigin:mouse;" raycaster="objects: .clickable"
+                            :position="`0 ${defaultHeightOverGround} 0`"
+                            xr-mode-ui="enabled: false;">
+                            <a-assets v-once timeout="25000">
+                              <template v-for="(fileNames, prop) in avatarAssets" :key="prop">
+                                <a-asset-item :id="`${prop}-${idx}`" v-for="(fileName, idx) in fileNames" :key="fileName"
+                                  :src="`/avatar/${prop}/${fileName}.glb`" />
+                              </template>
+                            </a-assets>
+                            <a-entity camera look-controls="enabled: false" camera-controls />
+                            <a-sky color="skyblue" />
+                            <a-entity laser-controls="hand: left" raycaster="objects: .clickable" />
+                            <a-entity laser-controls="hand: right" raycaster="objects: .clickable" />
+                  
+                  
+                            <a-entity position="0 0.2 0">
+                              <template v-for="(modelSetting, key) in currentAvatarSettings.parts" :key="key">
+                                <template v-if="modelSetting.model">
+                                  <template v-if="skinParts.includes(key)">
+                                    <a-gltf-model make-gltf-swappable
+                                      :src="`#${key}-${avatarAssets[key as keyof typeof avatarAssets].indexOf(modelSetting.model)}`"
+                                      :model-color="`colors: ${currentAvatarSettings.skinColor ?? ''}; materialName: skin`" />
+                                    <a-gltf-model v-if="key === 'hands' && modelSetting.model" make-gltf-swappable
+                                      :src="`#${key}-${avatarAssets[key as keyof typeof avatarAssets].indexOf(modelSetting.model)}`"
+                                      :model-color="`colors: ${currentAvatarSettings.skinColor ?? ''}; materialName: skin`"
+                                      scale="-1 1 1" />
+                                  </template>
+                                  <a-gltf-model v-else make-gltf-swappable @nrOfCustomColors="setNrOfCustomColors(key, $event)"
+                                    :src="`#${key}-${avatarAssets[key as keyof typeof avatarAssets].indexOf(modelSetting.model)}`"
+                                    :model-color="`colors: ${modelSetting.colors ?? ''};`" />
+                                </template>
+                              </template>
+                            </a-entity>
+                          </a-scene>
               </a-entity>
               <a-entity id="teleport-target-aframe-cursor" ref="cursorEntity">
 
@@ -421,7 +455,7 @@
 import AssetUpload, { type AssetUploadEmitUploadedPayload } from './AssetUpload.vue';
 import VrSpacePreview from '@/components/lobby/VrSpacePreview.vue';
 import WaitForAframe from '@/components/WaitForAframe.vue'
-import { ref, watch, onMounted, computed, type ComponentInstance, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, computed, type ComponentInstance, onBeforeUnmount, reactive } from 'vue';
 import { insertablePermissionHierarchy, type Asset, type VrSpaceId, defaultHeightOverGround, type UserId, type Json, translatePermissionLevelAdjective, translatePermissionLevelVerb, hasAtLeastSecurityRole } from 'schemas';
 import { useVrSpaceStore } from '@/stores/vrSpaceStore';
 import { useConnectionStore } from '@/stores/connectionStore';
@@ -451,6 +485,12 @@ type ScreenshotPayload = ExtractEmitData<'screenshot', ComponentInstance<typeof 
 
 const { selectedPlacedObject, placedObjectRotation, placedObjectScale, transformedSelectedObject, onTransformUpdate } = useSelectedPlacedObject();
 const { currentlyMovedObject } = useCurrentlyMovedObject();
+
+import { avatarAssets, type AvatarDesign, defaultAvatarDesign, type PartKeyWithColor, skinParts } from 'schemas';
+import { parse } from 'devalue';
+const currentAvatarSettings = reactive<AvatarDesign>(defaultAvatarDesign);
+const currentSkinColor = ref('');
+const skinColorIsActive = ref(false);
 
 onTransformUpdate(spo => {
   const transformedPO = spo;
@@ -760,10 +800,43 @@ onMounted(async () => {
   if (vrListResponse) {
     allowedVrSpaces.value = vrListResponse;
   }
+
+  const wasLoaded = loadAvatarFromClientState();
+  if (!wasLoaded) {
+    loadAvatarFromStorage();
+  }
 });
 onBeforeUnmount(async () => {
   await vrSpaceStore.leaveVrSpace();
 })
+
+function loadAvatarFromClientState() {
+  const avatarDesign = clientStore.clientState?.avatarDesign;
+  if (avatarDesign) {
+    currentAvatarSettings.parts = avatarDesign.parts;
+    currentAvatarSettings.skinColor = avatarDesign.skinColor;
+    return true;
+  }
+  return false;
+}
+
+function loadAvatarFromStorage() {
+  const loadedString = localStorage.getItem('avatarSettings');
+  if (!loadedString) {
+    console.error('no saved avatardesign in localstorage');
+  } else {
+    const parsedAvatarSettings = parse(loadedString);
+    currentAvatarSettings.parts = parsedAvatarSettings.parts;
+    currentAvatarSettings.skinColor = parsedAvatarSettings.skinColor;
+    console.log("Loaded skin color", parsedAvatarSettings.skinColor);
+    if (parsedAvatarSettings.skinColor) {
+      skinColorIsActive.value = true
+      currentSkinColor.value = parsedAvatarSettings.skinColor
+    }
+    console.log("Loaded parts", parsedAvatarSettings.parts)
+  }
+
+}
 
 let abortController: AbortController | undefined = undefined;
 function uploadScreenshot(canvas: ScreenshotPayload) {
