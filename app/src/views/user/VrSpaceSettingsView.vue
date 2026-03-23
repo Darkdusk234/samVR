@@ -415,14 +415,6 @@
                     type="radio" value="selfPlacement" aria-label="Hoppa in i scenen" class="btn btn-sm btn-primary"
                     v-model="currentRaycastReason"> -->
                   <pre>{{ currentCursorMode }}</pre>
-                  <button v-if="!vrComponentTag?.firstPersonViewActive" @click="setCursorMode('enterFirstPersonView')"
-                    class="btn btn-primary btn-sm">
-                    Hoppa in i scenen
-                  </button>
-                  <button v-else @click="vrComponentTag?.exitFirstPersonView" class="btn btn-primary btn-sm">
-                    Hoppa ut ur
-                    scenen
-                  </button>
                 </div>
               </div>
               <div>
