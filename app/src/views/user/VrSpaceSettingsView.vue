@@ -62,7 +62,7 @@
                   <input type="radio" v-model="vrSpaceStore.writableVrSpaceDbData.visibility" value="unlisted"
                     name="visibility" class="join-item btn btn-sm" aria-label="olistad" />
                   <input type="radio" v-model="vrSpaceStore.writableVrSpaceDbData.visibility" value="public"
-                    name="visibility" class="join-item btn btn-sm" aria-label="öppen" />
+                    name="visibility" class="join-item btn btn-sm" aria-label="publik" />
                 </div>
 
                 <!-- <input type="checkbox" class="toggle toggle-success" true-value="public" false-value="private"
