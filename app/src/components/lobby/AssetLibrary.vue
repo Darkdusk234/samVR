@@ -32,6 +32,9 @@
         <input v-model="filters.document" type="checkbox" class="hidden" /><span
           class="text-sm material-icons">done</span>Dokument
       </label>
+      <button @click="pickTextBox" class="btn btn-primary btn-sm">
+        Placera text
+      </button>
       <button v-if="filterActive" @click="clearFilters"
         class="btn btn-neutral btn-circle btn-xs material-icons">clear</button>
     </div>
@@ -129,6 +132,18 @@ function clearFilters() {
   filters.video = false;
   filters.model = false;
   filters.document = false;
+}
+
+function pickTextBox() {
+  const textAsset = {
+    assetId: 'virtual-text-box',
+    type: 'text',
+    name: 'TextBox',
+    originalFileName: 'text-box',
+    previewUrl: ''
+  } as Asset
+  
+  pickAsset(textAsset)
 }
 
 const filterActive = computed(() => {
