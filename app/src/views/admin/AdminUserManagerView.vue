@@ -242,9 +242,20 @@ const adminUsers = computed(() => {
     .filter(u => u.userId !== authStore.userId);
 });
 
-function openDeleteModal(user: Awaited<ReturnType<typeof getUsers>>[number]) {
-  userToDelete.value = { userId: user.userId, username: user.username };
-  showDeleteModal.value = true;
+async function openDeleteModal(user: Awaited<ReturnType<typeof getUsers>>[number]) {
+  try {
+    const hasVrSpaces = await vrSpaceStore.doesUserHaveVrSpaces(user.userId);
+
+    if (hasVrSpaces) {
+      userToDelete.value = { userId: user.userId, username: user.username };
+      showDeleteModal.value = true;
+    } else {
+      await deleteUser(user.userId);
+      await makeCallThenResetList(async () => {});
+    }
+  } catch (error) {
+    console.error('Check failed:', error);
+  }
 }
 
 async function handleUserDelete(payload: { action: 'take-over' | 'transfer'; targetUserId?: string }) {

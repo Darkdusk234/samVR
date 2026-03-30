@@ -133,6 +133,10 @@ export const useVrSpaceStore = defineStore('vrSpace', () => {
     await connection.client.vr.transferVrSpaceOwnership.mutate({ fromUserId, toUserId });
   }
 
+  async function doesUserHaveVrSpaces(userId: string) {
+    return await connection.client.vr.doesUserHaveVrSpaces.mutate({ userId });
+  }
+
   async function deleteVrSpace(vrSpaceId?: VrSpaceId) {
     if (!vrSpaceId) vrSpaceId = currentVrSpace.value?.dbData.vrSpaceId;
     if (!vrSpaceId) {
@@ -241,6 +245,7 @@ export const useVrSpaceStore = defineStore('vrSpace', () => {
     navMeshUrl,
     worldModelScaleString,
     panoramicPreviewUrl,
+    doesUserHaveVrSpaces,
     transferVrSpaceOwnership,
     createVrSpace,
     deleteVrSpace,
