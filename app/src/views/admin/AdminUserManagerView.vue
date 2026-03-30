@@ -121,12 +121,14 @@ import { useAuthStore } from '@/stores/authStore';
 import { useConnectionStore } from '@/stores/connectionStore';
 import { computed, onBeforeMount, reactive, ref } from 'vue';
 import { createUser, getAdmins, updateUser, deleteUser, getUsers } from '@/modules/authClient';
+import { useVrSpaceStore } from '@/stores/vrSpaceStore';
 import { allRolesBelow, hasAtLeastSecurityRole, roleHierarchy, translateUserRole, type UserRole } from 'schemas';
 import MaxWidth7xl from '@/components/layout/MaxWidth7xl.vue';
-import UserDeleteOwnershipModal from '@/components/UserDeletionEnvironmentsQuestionModal.vue'; 
+import UserDeleteOwnershipModal from '@/components/UserDeletionEnvironmentsQuestionModal.vue';
 
 // Use imports
 const authStore = useAuthStore();
+const vrSpaceStore = useVrSpaceStore();
 const connection = useConnectionStore();
 const creatableRoles = computed(() => {
   if (!authStore.role) return [];
@@ -249,14 +251,11 @@ async function handleUserDelete(payload: { action: 'take-over' | 'transfer'; tar
   if (!userToDelete.value) return;
 
   const newOwnerId = payload.action === 'transfer'
-    ? payload.targetUserId!
+    ? payload.targetUserId
     : authStore.userId;
   
   try {
-    await connection.client.vr.transferVrSpaceOwnership.mutate({
-      fromUserId: userToDelete.value.userId,
-      toUserId: newOwnerId,
-    });
+    await vrSpaceStore.transferVrSpaceOwnership(userToDelete.value.userId, newOwnerId);
 
     await deleteUser(userToDelete.value.userId);
     
