@@ -123,6 +123,26 @@ export const vrRouter = router({
       spaces: result
     };
   }),
+  doesUserHaveVrSpaces: atLeastUserP.input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (!hasAtLeastSecurityRole(ctx.role, 'admin')) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Admin rights required' });
+      }
+
+      const { userId } = input;
+      log.info(`Checking if user ${userId} owns VR spaces`);
+
+
+      const result = await db
+        .select({ count: sql<number>`count(*)`.mapWith(Number) })
+        .from(schema.vrSpaces)
+        .where(eq(schema.vrSpaces.ownerUserId, userId));
+
+      const hasSpaces = result[0]?.count > 0;
+      log.info(`User ${userId} ${hasSpaces ? 'HAS' : 'has NO'} VR spaces`);
+
+      return hasSpaces;
+    }),
   updateVrSpace: userWithEditRightsToVrSpace.input(VrSpaceUpdateSchema).mutation(async ({ ctx, input }) => {
     log.info('updating vrSpace', input);
     const { vrSpaceId, reason, ...data } = input;
