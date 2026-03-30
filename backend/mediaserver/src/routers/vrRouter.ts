@@ -89,10 +89,13 @@ export const vrRouter = router({
     ctx.client.leaveCurrentVrSpace();
     // ctx.vrSpace.removeClient(ctx.client);
   }),
-  transferVrSpaceOwnership: userWithAdminRightsToVrSpace.input(z.object({
+  transferVrSpaceOwnership: atLeastUserP.input(z.object({
     fromUserId: z.string(),
     toUserId: z.string(),
   })).mutation(async ({ ctx, input }) => {
+    if (!hasAtLeastSecurityRole(ctx.role, 'admin')) {
+      throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Admin rights required' });
+    }
     const { fromUserId, toUserId } = input;
 
     log.info(`Transferring VR spaces from ${fromUserId} to ${toUserId}`);
@@ -108,7 +111,6 @@ export const vrRouter = router({
 
     log.info(`Transferred ${result.length} VR spaces`);
 
-    // Notify affected VR spaces to reload (if active)
     for (const space of result) {
       const vrSpace = VrSpace.getVrSpace(space.vrSpaceId);
       if (vrSpace) {
