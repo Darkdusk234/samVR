@@ -8,7 +8,7 @@
         <h3>
           Skapa ny användare
         </h3>
-        <div class="flex gap-6 items-end">
+        <div class="flex flex-col gap-6 items-stretch md:flex-row md:items-end">
           <div>
             <label class="flex items-center gap-2">
               <span class="label-text">Användarnamn:</span>
