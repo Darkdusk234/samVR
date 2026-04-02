@@ -81,7 +81,7 @@
               :value="user.userId"
               v-model="selectedUserId"
             />
-            <span>{{ user.username }} ({{ user.role }})</span>
+            <span>{{ user.username }} ({{ translateUserRole(user.role) }})</span>
           </label>
           <p v-if="filteredUsers.length === 0" class="text-sm text-warning p-4 text-center">
             Inga användare matchar sökningen.
@@ -106,11 +106,15 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
+import { translateUserRole} from 'schemas';
+import { type getUsers } from '@/modules/authClient'
+
+type FetchedUser = Awaited<ReturnType<typeof getUsers>>[number];
 
 const props = defineProps<{
   modelValue: boolean;
   targetUserName: string;
-  users: Array<{ userId: string; username: string; role: string; email?: string }>;
+  users: Array<FetchedUser>;
 }>();
 
 const emit = defineEmits<{
@@ -128,9 +132,7 @@ const searchQuery = ref('');
 
 const filteredUsers = computed(() =>
   props.users.filter(user =>
-    user.username.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    user.role.toLowerCase().includes(searchQuery.value.toLowerCase())
+    user.username.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 );
 
