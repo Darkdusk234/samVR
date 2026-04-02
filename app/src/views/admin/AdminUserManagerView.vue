@@ -110,7 +110,7 @@
     <UserDeleteOwnershipModal
       v-model="showDeleteModal"
       :target-user-name="userToDelete?.username || ''"
-      :users="adminUsers"
+      :users="assignableUsers"
       @confirm="handleUserDelete"
     />
   </MaxWidth7xl>
@@ -234,10 +234,9 @@ async function makeCallThenResetList(fetchReq: (...p: any) => Promise<any>) {
   fetchedUsers.value = await getUsers();
 }
 
-const adminUsers = computed(() => {
+const assignableUsers = computed(() => {
   if (!fetchedUsers.value || !userToDelete.value) return [];
   return fetchedUsers.value
-    .filter(u => ['admin', 'superadmin', 'god', 'user'].includes(u.role))
     .filter(u => u.userId !== userToDelete.value!.userId)
     .filter(u => u.userId !== authStore.userId);
 });
