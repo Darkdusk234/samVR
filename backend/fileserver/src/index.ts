@@ -32,6 +32,7 @@ import sharp from 'sharp';
 const savePathAbsolute = path.resolve('.', 'uploads')
 const savePathRelative = './uploads/'
 const devMode = process.env.DEVELOPMENT === 'true';
+const localMode = process.env.EXPOSED_LOCAL === 'true';
 
 await promise.mkdir(savePathAbsolute, { recursive: true });
 
@@ -212,7 +213,7 @@ const privateRoutes = new Hono<{ Variables: { jwtPayload: JwtPayload } }>()
 
 const app = new Hono<{ Variables: { jwtPayload: JwtPayload } }>();
 
-if (devMode) {
+if (localMode) {
   app.use(
     '*',
     cors({
@@ -224,7 +225,7 @@ if (devMode) {
   app.use(
     '*',
     cors({
-      origin: [`${process.env.EXPOSED_SERVER_URL}`],
+      origin: [`https://${process.env.EXPOSED_SERVER_URL}`],
       credentials: true
     })
   )
@@ -233,7 +234,7 @@ if (devMode) {
 app.route('/', publicRoutes)
 app.route('/', privateRoutes);
 
-const port = Number.parseInt(process.env.FILESERVER_PORT ?? '3000');
+const port = Number.parseInt(process.env.EXPOSED_FILESERVER_PORT ?? '3000');
 console.log(`Server is running on port ${port}`)
 
 serve({
