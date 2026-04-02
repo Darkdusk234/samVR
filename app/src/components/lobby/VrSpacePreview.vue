@@ -63,7 +63,7 @@
       <button 
         v-else
         @click="exitFirstPerson"
-        class="rounded-bl-lg py-1 px-2 btn  btn-sm">
+        class="rounded-bl-lg py-1 px-2 btn btn-sm">
         Hoppa ut ur scenen
       </button>
     </div>
