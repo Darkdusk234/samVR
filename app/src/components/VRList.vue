@@ -51,7 +51,7 @@
 import type { RouterOutputs } from '@/modules/trpcClient';
 import { useConnectionStore } from '@/stores/connectionStore';
 import { type VrSpaceId, hasAtLeastPermissionLevel, hasAtLeastSecurityRole, translatePermissionLevelAdjective, translatePermissionLevelVerb, translateVisibility } from 'schemas';
-import { onBeforeMount, ref, computed } from 'vue';
+import { onBeforeMount, ref, computed, watch } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { getAssetUrl } from '@/modules/utils';
 import { useAuthStore } from '@/stores/authStore';
@@ -87,6 +87,19 @@ const filteredVrSpaces = computed(() => {
 
     return matchesName && matchesVisibility;
   });
+});
+
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(filteredVrSpaces.value.length / pageSize.value))
+);
+
+const paginatedVrSpaces = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  return filteredVrSpaces.value.slice(start, start + pageSize.value);
+});
+
+watch([searchQuery, visibilityFilter, pageSize], () => {
+  currentPage.value = 1;
 });
 
 const props = defineProps({
