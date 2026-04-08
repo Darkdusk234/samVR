@@ -26,6 +26,9 @@
         <option value="member">Medlem</option>
         <option value="public">Publika</option>
       </select>
+      <button class="btn btn-sm" @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'">
+        Sortera {{ sortOrder === 'asc' ? 'A → Ö' : 'Ö → A' }}
+      </button>
     </div>
     <div class="w-full grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-4 items-stretch">
       <div v-for="space in paginatedVrSpaces" :key="space.vrSpaceId" class="card card-compact w-full shadow-xl">
@@ -94,6 +97,7 @@ const searchQuery = ref('');
 const visibilityFilter = ref<'all' | 'owned' | 'member' | 'public'>('all');
 const currentPage = ref(1);
 const pageSize = ref(12);
+const sortOrder = ref<'asc' | 'desc'>('asc');
 
 const filteredVrSpaces = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
@@ -117,13 +121,19 @@ const filteredVrSpaces = computed(() => {
   });
 });
 
+const sortedVrSpaces = computed(() => {
+  return [...filteredVrSpaces.value].sort((a, b) => {
+    return a.name.localeCompare(b.name, 'sv') * (sortOrder.value === 'asc' ? 1 : -1);
+  });
+});
+
 const totalPages = computed(() =>
-  Math.max(1, Math.ceil(filteredVrSpaces.value.length / pageSize.value))
+  Math.max(1, Math.ceil(sortedVrSpaces.value.length / pageSize.value))
 );
 
 const paginatedVrSpaces = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value;
-  return filteredVrSpaces.value.slice(start, start + pageSize.value);
+  return sortedVrSpaces.value.slice(start, start + pageSize.value);
 });
 
 watch([searchQuery, visibilityFilter, pageSize], () => {
