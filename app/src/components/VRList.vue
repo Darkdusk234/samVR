@@ -13,6 +13,20 @@
         </button>
       </template>
     </div> -->
+    <div class="flex flex-col gap-3 md:flex-row md:items-center">
+      <input
+        v-model="searchQuery"
+        class="input input-bordered input-primary w-full md:max-w-sm"
+        placeholder="Sök VR-scen..."
+      />
+
+      <select v-model="visibilityFilter" class="select select-bordered">
+        <option value="all">Alla</option>
+        <option value="owned">Äger själv</option>
+        <option value="member">Med i men äger inte</option>
+        <option value="public">Publika</option>
+      </select>
+    </div>
     <div class="w-full grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-4 items-stretch">
       <div v-for="space in listedVrSpaces" :key="space.vrSpaceId" class="card card-compact w-full shadow-xl">
         <figure class="w-full h-32" style="background-size: cover"
@@ -64,8 +78,6 @@ const searchQuery = ref('');
 const visibilityFilter = ref<'all' | 'owned' | 'member' | 'public'>('all');
 const currentPage = ref(1);
 const pageSize = ref(12);
-
-const visibilityFilter = ref<'all' | 'owned' | 'member' | 'public'>('all');
 
 const filteredVrSpaces = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
