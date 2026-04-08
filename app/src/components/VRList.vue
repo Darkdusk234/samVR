@@ -60,6 +60,35 @@ const connection = useConnectionStore();
 const authStore = useAuthStore();
 // const vrSpaceStore = useVrSpaceStore();
 
+const searchQuery = ref('');
+const visibilityFilter = ref<'all' | 'owned' | 'member' | 'public'>('all');
+const currentPage = ref(1);
+const pageSize = ref(12);
+
+const visibilityFilter = ref<'all' | 'owned' | 'member' | 'public'>('all');
+
+const filteredVrSpaces = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase();
+
+  return availableVrSpaces.value.filter(space => {
+    const matchesName =
+      query === '' || space.name.toLowerCase().includes(query);
+
+    const matchesVisibility =
+      visibilityFilter.value === 'all'
+        ? true
+        : visibilityFilter.value === 'owned'
+          ? space.permissionLevel === 'owner'
+          : visibilityFilter.value === 'member'
+            ? ['admin', 'edit', 'view'].includes(space.permissionLevel ?? '')
+            : visibilityFilter.value === 'public'
+              ? space.visibility === 'public'
+              : true;
+
+    return matchesName && matchesVisibility;
+  });
+});
+
 const props = defineProps({
   max: { type: Number, default: -1 },
 });
