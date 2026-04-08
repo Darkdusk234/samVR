@@ -22,8 +22,8 @@
 
       <select v-model="visibilityFilter" class="select select-bordered">
         <option value="all">Alla</option>
-        <option value="owned">Äger själv</option>
-        <option value="member">Med i men äger inte</option>
+        <option value="owned">Äger</option>
+        <option value="member">Medlem</option>
         <option value="public">Publika</option>
       </select>
     </div>
