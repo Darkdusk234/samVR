@@ -4,7 +4,7 @@ process.env.DEBUG = 'Router:VR*, ' + process.env.DEBUG;
 log.enable(process.env.DEBUG);
 
 import { ClientRealtimeDataSchema, hasAtLeastSecurityRole, PlacedObjectIdSchema, PlacedObjectInsertSchema, ScreenShareSchema, TransformSchema, VrSpaceIdSchema, VrSpaceUpdateSchema } from 'schemas';
-import { procedure as p, router, isUserClientM, userClientP, atLeastUserP, userInVrSpaceP, userWithEditRightsToVrSpace, userWithAdminRightsToVrSpace } from '../trpc/trpc.js';
+import { procedure as p, router, isUserClientM, userClientP, atLeastUserP, atLeastAdminP, userInVrSpaceP, userWithEditRightsToVrSpace, userWithAdminRightsToVrSpace } from '../trpc/trpc.js';
 import { VrSpace } from 'classes/VrSpace.js';
 import { z } from 'zod';
 import { db, schema, } from 'database';
@@ -123,11 +123,8 @@ export const vrRouter = router({
       spaces: result
     };
   }),
-  doesUserHaveVrSpaces: atLeastUserP.input(z.object({ userId: z.string() }))
+  doesUserHaveVrSpaces: atLeastAdminP.input(z.object({ userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      if (!hasAtLeastSecurityRole(ctx.role, 'admin')) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Admin rights required' });
-      }
 
       const { userId } = input;
       log.info(`Checking if user ${userId} owns VR spaces`);
