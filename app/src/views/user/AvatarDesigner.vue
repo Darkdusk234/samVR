@@ -229,7 +229,7 @@ watch(currentColorPickerValue, (newColor, prevColor) => {
       <!-- COLUMN 1 -->
       <div
         class="grid grid-cols-[minmax(min-content,1fr)_minmax(8rem,1.7fr)_auto] items-center gap-5 overflow-y-auto capitalize bg-slate-200 p-2 rounded-md">
-        <span class="col-start-1 label-text font-semibold">Hud Färg</span>
+        <span class="col-start-1 label-text font-semibold">Hudfärg</span>
         <div class="col-start-3">
           <button class="btn btn-xs btn-circle btn-outline material-icons text-lg leading-none"
             :style="{ 'background': skinColorIsActive ? currentSkinColor : 'transparent' }" @click="popupSkin.open">
