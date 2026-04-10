@@ -24,21 +24,6 @@
 
         <div class="form-control">
           <label class="label">
-            <span class="label-text">Bekräfta nuvarande lösenord</span>
-          </label>
-          <input
-            v-model="currentPasswordCheck"
-            type="password"
-            class="input input-bordered w-full"
-            :class="{ 'input-error': !passwordsMatch }"
-          />
-          <p v-if="!passwordsMatch" class="mt-1 text-sm text-error">
-            Lösenorden stämmer inte överens.
-          </p>
-        </div>
-
-        <div class="form-control">
-          <label class="label">
             <span class="label-text">Nytt lösenord</span>
           </label>
           <input
@@ -46,6 +31,21 @@
             type="password"
             class="input input-bordered w-full"
           />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Bekräfta nytt lösenord</span>
+          </label>
+          <input
+            v-model="newPasswordCheck"
+            type="password"
+            class="input input-bordered w-full"
+            :class="{ 'input-error': !passwordsMatch }"
+          />
+          <p v-if="!passwordsMatch" class="mt-1 text-sm text-error">
+            Lösenorden stämmer inte överens.
+          </p>
         </div>
 
         <div class="modal-action">
@@ -83,12 +83,12 @@ const emptyForm = () => ({
 });
 
 const passwordForm = ref(emptyForm());
-const currentPasswordCheck = ref('');
+const newPasswordCheck = ref('');
 
 const passwordsMatch = computed(
   () =>
-    currentPasswordCheck.value === '' ||
-    passwordForm.value.currentPassword === currentPasswordCheck.value,
+    newPasswordCheck.value === '' ||
+    passwordForm.value.currentPassword === newPasswordCheck.value,
 );
 
 watch(
@@ -96,7 +96,7 @@ watch(
   (open) => {
     if (open) {
       passwordForm.value = emptyForm();
-      currentPasswordCheck.value = '';
+      newPasswordCheck.value = '';
     }
   },
 );
