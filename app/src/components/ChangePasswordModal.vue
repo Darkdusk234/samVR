@@ -38,7 +38,7 @@
             <span class="label-text">Bekräfta nytt lösenord</span>
           </label>
           <input
-            v-model="newPasswordCheck"
+            v-model="passwordForm.newPasswordConfirm"
             type="password"
             class="input input-bordered w-full"
             :class="{ 'input-error': !passwordsMatch }"
@@ -80,15 +80,14 @@ const emit = defineEmits<{
 const emptyForm = () => ({
   currentPassword: '',
   newPassword: '',
+  newPasswordConfirm: '',
 });
 
 const passwordForm = ref(emptyForm());
-const newPasswordCheck = ref('');
 
-const passwordsMatch = computed(
-  () =>
-    newPasswordCheck.value === '' ||
-    passwordForm.value.currentPassword === newPasswordCheck.value,
+const passwordsMatch = computed(() =>
+    passwordForm.value.newPasswordConfirm === '' ||
+    passwordForm.value.newPassword === passwordForm.value.newPasswordConfirm,
 );
 
 watch(
@@ -96,7 +95,7 @@ watch(
   (open) => {
     if (open) {
       passwordForm.value = emptyForm();
-      newPasswordCheck.value = '';
+      passwordForm.value.newPasswordConfirm = '';
     }
   },
 );
