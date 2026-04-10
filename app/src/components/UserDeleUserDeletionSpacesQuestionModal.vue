@@ -7,12 +7,12 @@
     <div class="modal-box">
       <button @click="onCancel" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
       <h2 class="text-lg font-semibold mb-4">
-        {{ ownershipStep === 1 ? 'Radera användare' : 'Välj ny ägare' }}
+        {{ ownershipStep === 1 ? 'Ta bort användare' : 'Välj ny ägare' }}
       </h2>
 
       <div v-if="ownershipStep === 1" class="space-y-4">
         <p class="text-sm text-error">
-          Användaren äger VR-miljöer. Välj vad som ska hända med ägandet av miljöerna:
+          Användaren äger VR-miljöer. Välj vad som ska hända med dessa miljöer:
         </p>
 
         <div class="form-control">
@@ -24,7 +24,7 @@
               :value="'take-over'"
               v-model="selectedAction"
             />
-            <span class="label-text">Ta över miljö ägandet själv</span>
+            <span class="label-text">Ta över ägandet själv</span>
           </label>
         </div>
 
@@ -37,7 +37,7 @@
               :value="'transfer'"
               v-model="selectedAction"
             />
-            <span class="label-text">Överför miljö ägandet till annan användare/admin</span>
+            <span class="label-text">Överför ägandet till en annan användare eller admin</span>
           </label>
         </div>
 
@@ -56,14 +56,14 @@
 
       <div v-else-if="ownershipStep === 2" class="space-y-4">
         <p class="text-sm">
-          Välj användare som ska ta över ägandet av {{ targetUserName }}'s VR-miljöer:
+          Välj vem som ska ta över ägandet av {{ targetUserName }}s VR-miljöer:
         </p>
 
         <div class="form-control">
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Sök användare..."
+            placeholder="Sök användarnamn..."
             class="input input-bordered w-full"
           />
         </div>
@@ -96,7 +96,7 @@
             :disabled="!selectedUserId"
             @click="onConfirmDelete"
           >
-            Bekräfta radering & överföring
+            Bekräfta borttagning och överföring
           </button>
         </div>
       </div>
